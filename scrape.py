@@ -40,19 +40,16 @@ time.sleep(5)
 
 emails = []
 
-for j in range(714):
-    next_btn = driver_chrome.find_elements(By.CLASS_NAME, "pagination_pagNextButton__PT8dW")[0]
-
+for j in range(711):
     count = 20
-    if j == 713:
-        count = 1
     for i in range(count):
+        next_btn = driver_chrome.find_elements(By.CLASS_NAME, "pagination_pagNextButton__PT8dW")[0]
         for k in range(j):
             next_btn.click()
             time.sleep(1)
         driver_chrome.execute_script("window.scrollTo(0, document.body.scrollTop);")
         time.sleep(1)
-        
+
         agent_list = driver_chrome.find_elements(By.CLASS_NAME, "memberGrid_membersTab__zHE_h")[i]
         agent_list.find_elements(By.CSS_SELECTOR, "*")[0].click()
         time.sleep(5)
