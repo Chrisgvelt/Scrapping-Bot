@@ -38,33 +38,29 @@ time.sleep(5)
 # agent_list = driver_chrome.find_elements(By.CLASS_NAME, "memberGrid_membersTab__zHE_h")
 # print(agent_list)
 
-emails = []
-
-for j in range(711):
-    count = 20
-    for i in range(count):
-        next_btn = driver_chrome.find_elements(By.CLASS_NAME, "pagination_pagNextButton__PT8dW")[0]
-        for k in range(j):
-            next_btn.click()
-            time.sleep(1)
-        driver_chrome.execute_script("window.scrollTo(0, document.body.scrollTop);")
-        time.sleep(1)
-
-        agent_list = driver_chrome.find_elements(By.CLASS_NAME, "memberGrid_membersTab__zHE_h")[i]
-        agent_list.find_elements(By.CSS_SELECTOR, "*")[0].click()
-        time.sleep(5)
-
-        email = driver_chrome.find_element(By.CLASS_NAME, "peoplePage_headerInformation__vqNIG").find_elements(By.CSS_SELECTOR, "*")[1]
-        emails.append(email.text)
-        print(email.text)
-
-        driver_chrome.get('https://www.rebny.com/members/')
-        time.sleep(5)
-
-
 with open('emails.csv', 'w', encoding = "mbcs") as csvfile:
     spamwriter = csv.writer(csvfile)
     spamwriter.writerow({'Emails'})
-    for i in range(len(emails)):
-        spamwriter.writerow({emails[i]})
+    for j in range(711):
+        print(j + 1)
+        count = 20
+        for i in range(count): 
+            next_btn = driver_chrome.find_elements(By.CLASS_NAME, "pagination_pagNextButton__PT8dW")[0]
+            for k in range(j):
+                next_btn.click()
+                time.sleep(1)
+            driver_chrome.execute_script("window.scrollTo(0, document.body.scrollTop);")
+            time.sleep(1)
+
+            agent_list = driver_chrome.find_elements(By.CLASS_NAME, "memberGrid_membersTab__zHE_h")[i]
+            agent_list.find_elements(By.CSS_SELECTOR, "*")[0].click()
+            time.sleep(5)
+
+            email = driver_chrome.find_element(By.CLASS_NAME, "peoplePage_headerInformation__vqNIG").find_elements(By.CSS_SELECTOR, "*")[1]
+            spamwriter.writerow({email.text})
+            print(email.text)
+
+            driver_chrome.get('https://www.rebny.com/members/')
+            time.sleep(5)
+
         
