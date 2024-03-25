@@ -26,7 +26,7 @@ def job():
 
 history = []
 
-def updateData():
+def updateData(flag = True):
     api_url = 'https://api.airtable.com/v0/app3x8SwYo15yBTYu/tbl5siFiCvzMKsyUC'
     headers = {"Content-Type": "application/json", "Authorization": "Bearer pat0VYxeI4xFmfQef.15bd44d6c1545c096c0f0a95713c710d31d099c083286e86081cc9630236383c"}
 
@@ -103,9 +103,10 @@ def updateData():
                         "Sheet": sheet.get_attribute('href')
                     }
                 }
-                print(data in history)
+                print(flag)
+                print(flag and data in history)
 
-                if data in history :
+                if flag and data in history :
                     break
     
                 history.append(data)
@@ -115,13 +116,14 @@ def updateData():
 
             if j < len(agent_list) - 1 :
                 break
+    day = 2
 
 
 
 
 schedule.every().day.do(updateData)
 
-updateData()
+updateData(False)
 
 while True:
     schedule.run_pending()
