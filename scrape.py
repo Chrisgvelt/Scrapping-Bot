@@ -7,6 +7,10 @@ import csv
 import xlrd
 import pandas as pd
 import datetime
+import requests
+import json
+import schedule
+import time
 
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,50 +21,137 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains as Actions
 from xlsxwriter.workbook import Workbook
 
-# Google Chrome Webdriver 
-driver_chrome = webdriver.Chrome()  
-# maximize the browser
-driver_chrome.maximize_window()
-# set the url for scrapping
-driver_chrome.get('https://www.myrebny.com/s/login/?startURL=%2Fidp%2Flogin%3Fapp%3D0sp3s000000TNJ9%26SAMLRequest%3DnVNNj9owEP0rke%252FkA1AFFgFRUFWq7TaCtIdeKseZ7Frr2K7H2cC%252FrxPILocuB3KJNPPy3rw3k8XqWMvgFSwKrVKShDFZLRfIamnounHPag9%252FG0AXeJhC2jdS0lhFNUOBVLEakDpOD%252BvvD3QcxtRY7TTXkgS7bUr%252BzPi0LOacwyyZVJNxUcUJI8GvQdB%252F4YGIDewUOqacL8Xj6ShORsk4T6Y0ntA4CWfzT79JkF2oPwtVCvV0e47iDEL6Nc%252BzUfbjkJNg650IxVwv%252FeycQRpFbduG9clCoU4h13UkShNJ%252FSTUihmTxmgmGPdP%252FvhtToI1ItiOYaMVNjXYA9hXweHn%252FuGdkxkRvjP2bBFnUhaMv5BzvrR3ba%252BCve2HDbpkOahYYNI7Yg4KzWypKwXtSdsXbyfErlVpy6EbYRFdSQ77ffQau22mpeCne%252Fb7RduauY%252FRSZj0FVGOqh5KG4UGuKgElD5IKXW78R4cpMTZBkg0THY5Oij7E%252FRBOzjedYIbXRtmBXb7hiPjbgj%252FmngjfbZ7qO5ZxU0Yp7yj9uXMv1pty%252B6CgXtjuWU%252BC23dZTP%252Fm2d57n0Qx1v3%252Bjdd%252FgM%253D')
-time.sleep(3)
+def job():
+    print("Hello, world!")
 
-# login operation
-email = driver_chrome.find_element(By.CSS_SELECTOR, "[type = 'text']")
-email.send_keys("Ileone@corcoran.com")
-password = driver_chrome.find_element(By.CSS_SELECTOR, "[type = 'password']")
-password.send_keys("Ignazio310")
-login = driver_chrome.find_element(By.CSS_SELECTOR, "[type = 'button']")
-login.click()   
-time.sleep(3)
-driver_chrome.get('https://www.rebny.com/members/')
-time.sleep(5)
-# agent_list = driver_chrome.find_elements(By.CLASS_NAME, "memberGrid_membersTab__zHE_h")
-# print(agent_list)
+history = []
 
-with open('emails.csv', 'w', encoding = "mbcs") as csvfile:
-    spamwriter = csv.writer(csvfile)
-    spamwriter.writerow({'Emails'})
-    for j in range(711):
-        print(j + 1)
-        count = 20
-        for i in range(count): 
-            next_btn = driver_chrome.find_elements(By.CLASS_NAME, "pagination_pagNextButton__PT8dW")[0]
-            for k in range(j):
-                next_btn.click()
-                time.sleep(1)
-            driver_chrome.execute_script("window.scrollTo(0, document.body.scrollTop);")
-            time.sleep(1)
+def updateData():
+    api_url = 'https://api.airtable.com/v0/app3x8SwYo15yBTYu/tbl5siFiCvzMKsyUC'
+    headers = {"Content-Type": "application/json", "Authorization": "Bearer pat0VYxeI4xFmfQef.15bd44d6c1545c096c0f0a95713c710d31d099c083286e86081cc9630236383c"}
 
-            agent_list = driver_chrome.find_elements(By.CLASS_NAME, "memberGrid_membersTab__zHE_h")[i]
-            agent_list.find_elements(By.CSS_SELECTOR, "*")[0].click()
-            time.sleep(5)
+    # Google Chrome Webdriver 
+    driver_chrome = webdriver.Chrome()  
+    # maximize the browser
+    # driver_chrome.maximize_window()
+    # set the url for scrapping
+    driver_chrome.get('https://www.renthop.com/account/login?fwd=%2Faccount%2Flistings_bank')
+    time.sleep(3)
 
-            email = driver_chrome.find_element(By.CLASS_NAME, "peoplePage_headerInformation__vqNIG").find_elements(By.CSS_SELECTOR, "*")[1]
-            spamwriter.writerow({email.text})
-            print(email.text)
+    # login operation
+    email = driver_chrome.find_element(By.CSS_SELECTOR, "[type = 'text']")
+    email.send_keys("clients@masterkey.nyc")
+    submit = driver_chrome.find_element(By.CSS_SELECTOR, "[type = 'submit']")
+    submit.click()
+    time.sleep(3)
 
-            driver_chrome.get('https://www.rebny.com/members/')
-            time.sleep(5)
+    password = driver_chrome.find_element(By.CSS_SELECTOR, "[type = 'password']")
+    password.send_keys("masterkey24")
+    login = driver_chrome.find_element(By.ID, "login-2-button")
+    login.click()
+    time.sleep(3)
+
+    count = 0
+
+    with open('output.csv', 'w', encoding = "mbcs") as csvfile:
+        # spamwriter = csv.writer(csvfile)
+
+        for i in range(64):
+            print("page", i + 1)
+            driver_chrome.get('https://www.renthop.com/account/listings_bank?max_price=100000&areas=new-york-ny&status=88&usernames%5B0%5D=takumi%40renthop.com&usernames%5B1%5D=openlistingbank%40brokersnyc.com&page=' + str(i + 1) + '&sort=hopscore')
+            time.sleep(2)
+            
+            agent_list = driver_chrome.find_element(By.ID, "search-results-list").find_elements(By.CLASS_NAME, "listing-entry")
+            # .find_elements(By.CLASS_NAME, "listing-entry")
+            print(len(agent_list))
+
+            for j in range(len(agent_list)):
+
+                # print(agent_list[j].text)
+
+                count += 1
+                # spamwriter.writerow({'Item' + str(count)})
+                address = agent_list[j].find_element(By.XPATH, "./*[1]/*[2]/*[1]/*[1]")
+                # spamwriter.writerow({address.text})
+                
+                location = agent_list[j].find_element(By.XPATH, "./*[1]/*[2]/*[1]/*[2]")
+                # spamwriter.writerow({location.text})
+
+                price = agent_list[j].find_element(By.XPATH, "./*[1]/*[2]/*[2]/*[1]")
+                # spamwriter.writerow({price.text})
+                
+                rooms = agent_list[j].find_element(By.XPATH, "./*[1]/*[2]/*[2]/*[2]")
+                # spamwriter.writerow({rooms.text})
+
+                name = agent_list[j].find_element(By.XPATH, "./*[1]/*[2]/*[3]/*[1]")
+                # spamwriter.writerow({name.text})
+                
+                phone= agent_list[j].find_element(By.XPATH, "./*[1]/*[2]/*[4]/*[1]")
+                # spamwriter.writerow({phone.text})
+
+                sheet = agent_list[j].find_element(By.XPATH, "./*[3]/*[1]/*[2]/*[1]")
+                # spamwriter.writerow({sheet.get_attribute('href')})
+
+                data = {
+                    "fields": {
+                        "Address": address.text,
+                        "Location": location.text,
+                        "Price": price.text,
+                        "Rooms": rooms.text,
+                        "Name": name.text,
+                        "Phone": phone.text,
+                        "Sheet": sheet.get_attribute('href')
+                    }
+                }
+                print(data in history)
+
+                if data in history :
+                    break
+    
+                history.append(data)
+
+                response = requests.post(api_url, headers=headers, json=data)
+                print("data: ", response.json())
+
+            if j < len(agent_list) - 1 :
+                break
+
+
+
+
+schedule.every().day.do(job)
+
+updateData()
+
+updateData()
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)  # Sleep for 1 second to avoid high CPU usage
+
+
+
+
+#     for j in range(711):
+#         print(j + 1)
+#         count = 20
+#         for i in range(count): 
+#             next_btn = driver_chrome.find_elements(By.CLASS_NAME, "pagination_pagNextButton__PT8dW")[0]
+#             for k in range(j):
+#                 next_btn.click()
+#                 time.sleep(1)
+#             driver_chrome.execute_script("window.scrollTo(0, document.body.scrollTop);")
+#             time.sleep(1)
+
+#             agent_list = driver_chrome.find_elements(By.CLASS_NAME, "memberGrid_membersTab__zHE_h")[i]
+#             agent_list.find_elements(By.CSS_SELECTOR, "*")[0].click()
+#             time.sleep(5)
+
+#             email = driver_chrome.find_element(By.CLASS_NAME, "peoplePage_headerInformation__vqNIG").find_elements(By.CSS_SELECTOR, "*")[1]
+#             spamwriter.writerow({email.text})
+#             print(email.text)
+
+#             driver_chrome.get('https://www.rebny.com/members/')
+#             time.sleep(5)
 
         
