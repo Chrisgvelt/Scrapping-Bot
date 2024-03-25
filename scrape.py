@@ -119,9 +119,7 @@ def updateData():
 
 
 
-schedule.every().day.do(job)
-
-updateData()
+schedule.every().day.do(updateData)
 
 updateData()
 
